@@ -1,10 +1,10 @@
-# m-webrtcvad
-MATLAB wrapper for WebRtc VAD module
+# mex-webrtcvad
+This is a MATLAB executable (mex) wrapper for [Google's WebRTC](https://webrtc.org/) Voice Activity Detection (VAD) module.
 
-## Build
+## How to build
 Run ```make.m```
 
-## Usage
+## How to use
 ```
 % Init
 mwebrtcvad('Init');
