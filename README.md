@@ -27,6 +27,7 @@ for i=1:numFrames
     mvadOut(i) = mwebrtcvad('Process', sampleRate, audioSignal((i-1)*frameLen+1:i*frameLen), frameLen);
 end
 
+% Free VAD
 mwebrtcvad('Free');
 ```
 ## Links
