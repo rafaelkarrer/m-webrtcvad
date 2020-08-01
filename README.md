@@ -26,7 +26,8 @@ for i=1:numFrames
     % Process one frame
     mvadOut(i) = mwebrtcvad('Process', sampleRate, audioSignal((i-1)*frameLen+1:i*frameLen), frameLen);
 end
-
-% Free VAD
+https://github.com/wiseman/py-webrtcvad
 mwebrtcvad('Free');
 ```
+## Links
+Wiseman's [Python Interface for WebRTC VAD](https://github.com/wiseman/py-webrtcvad)
