@@ -45,7 +45,7 @@ public:
         if (cmdCharArray.toAscii() == factory.createCharArray("Init").toAscii()) {
             vadInit();
         } else if (cmdCharArray.toAscii() == factory.createCharArray("SetMode").toAscii()) {
-            vadSetMode( (int)inputs[2][0] );
+            vadSetMode( (int)inputs[1][0] );
         } else if (cmdCharArray.toAscii() == factory.createCharArray("Process").toAscii()) {
             matlab::data::TypedArray<int16_t> speech = std::move(inputs[2]);
 
