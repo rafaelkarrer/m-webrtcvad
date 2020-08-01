@@ -26,18 +26,6 @@ public:
     }
     
     void operator()(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
-        
-        //stream << "x=" << double(x) << std::endl;
-        //writeToConsole(stream);
-        
-        const int kModes[] = {0, 1, 2, 3};
-        const int kRates[] = {8000, 12000, 16000, 24000, 32000, 48000};
-        const size_t kRatesSize = sizeof(kRates) / sizeof(*kRates);
-
-        // Frame lengths we support.
-        const size_t kMaxFrameLength = 1440;
-        const size_t kFrameLengths[] = {80, 120, 160, 240, 320, 480, 640, 960, kMaxFrameLength};
-        const size_t kFrameLengthsSize = sizeof(kFrameLengths) / sizeof(*kFrameLengths);
 
         checkArguments(outputs, inputs);
 
@@ -45,10 +33,14 @@ public:
         
         if (cmdCharArray.toAscii() == factory.createCharArray("Init").toAscii()) {
             vadInit();
+            outputs[0] = factory.createArray<double>({ 0,0 }, { });
+            return;
         } else if (cmdCharArray.toAscii() == factory.createCharArray("SetMode").toAscii()) {
             vadSetMode( (int)inputs[1][0] );
             //stream << "vad mode = " << (int)inputs[1][0] << std::endl;
             //writeToConsole(stream);
+            outputs[0] = factory.createArray<double>({ 0,0 }, { });
+            return;
         } else if (cmdCharArray.toAscii() == factory.createCharArray("Process").toAscii()) {
             matlab::data::TypedArray<int16_t> speech = std::move(inputs[2]);
 
@@ -56,12 +48,18 @@ public:
             vadResult = vadProcess( (int)inputs[1][0], frame, (int)inputs[3][0] );
             //stream << "VAD=" << vad << (int)inputs[1][0] << (int)inputs[3][0] << frame[0] << frame[1] << std::endl;
             //writeToConsole(stream);
+            
+            outputs[0] = factory.createArray<double>({ 1,1 }, { (double)vadResult });
+            return;
+            
         } else if (cmdCharArray.toAscii() == factory.createCharArray("Free").toAscii()) {
             vadFree();
+            outputs[0] = factory.createArray<double>({ 0,0 }, { });
+            return;
         }
         //matlab::data::TypedArray<double> in = std::move(0);
-
-        outputs[0] = factory.createArray<double>({ 1,1 }, { (double)vadResult });
+        
+        outputs[0] = factory.createArray<double>({ 0,0 }, { });
     }
 
     void vadInit() {
