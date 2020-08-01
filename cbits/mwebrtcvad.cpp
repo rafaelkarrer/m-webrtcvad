@@ -102,7 +102,7 @@ public:
     void checkArguments(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
         if (inputs[0].getType() != matlab::data::ArrayType::CHAR) {
             matlabPtr->feval(u"error", 
-                0, std::vector<matlab::data::Array>({ factory.createScalar("First input must be of type string") }));            
+                0, std::vector<matlab::data::Array>({ factory.createScalar("Action argument must be one of the following strings: 'Init', 'SetMode', 'Process'") }));            
         }
 
         matlab::data::CharArray cmdCharArray = inputs[0];
@@ -114,24 +114,24 @@ public:
         } else if (cmdCharArray.toAscii() == factory.createCharArray("Process").toAscii()) {
             if (inputs.size() != 4) {
                 matlabPtr->feval(u"error", 
-                    0, std::vector<matlab::data::Array>({ factory.createScalar("Action 'Process' requires 3 arguments") }));  
+                    0, std::vector<matlab::data::Array>({ factory.createScalar("Action 'Process' requires 3 arguments: sample rate (<double>), audio_frame (<int16> array), frame_length (<double>)") }));  
             }
             if (inputs[1].getType() != matlab::data::ArrayType::DOUBLE) {
                 matlabPtr->feval(u"error", 
-                    0, std::vector<matlab::data::Array>({ factory.createScalar("First argument must be of type double") }));            
+                    0, std::vector<matlab::data::Array>({ factory.createScalar("Argument 1 (sample rate) must be of type <double>") }));            
             }
             if (inputs[2].getType() != matlab::data::ArrayType::INT16) {
                 matlabPtr->feval(u"error", 
-                    0, std::vector<matlab::data::Array>({ factory.createScalar("Second argument must be of type int16") }));            
+                    0, std::vector<matlab::data::Array>({ factory.createScalar("Argument 2 (audio_frame) must be of type <int16>") }));            
             }
             if (inputs[3].getType() != matlab::data::ArrayType::DOUBLE) {
                 matlabPtr->feval(u"error", 
-                    0, std::vector<matlab::data::Array>({ factory.createScalar("Third argument must be of type double") }));            
+                    0, std::vector<matlab::data::Array>({ factory.createScalar("Argument 3 (frame_length) must be of type <double>") }));            
             }
             
         } else {
             matlabPtr->feval(u"error", 
-                0, std::vector<matlab::data::Array>({ factory.createScalar("First input must be one of the following: 'Init', 'SetMode', 'Process'") })); 
+                0, std::vector<matlab::data::Array>({ factory.createScalar("Action argument must be one of the following strings: 'Init', 'SetMode', 'Process'") })); 
         }
         
 //         if (inputs.size() != 2) {
