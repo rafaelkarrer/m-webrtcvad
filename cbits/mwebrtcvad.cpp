@@ -45,20 +45,18 @@ public:
         if (cmdCharArray.toAscii() == factory.createCharArray("Init").toAscii()) {
             vadInit();
         } else if (cmdCharArray.toAscii() == factory.createCharArray("SetMode").toAscii()) {
-            vadSetMode( 3 );
+            vadSetMode( (int)inputs[2][0] );
         } else if (cmdCharArray.toAscii() == factory.createCharArray("Process").toAscii()) {
             matlab::data::TypedArray<int16_t> speech = std::move(inputs[2]);
 
-            int vad = vadProcess( 8000, speech.release().get(), 240 );
-            stream << "VAD=" << vad << std::endl;
-            writeToConsole(stream);
+            int vad = vadProcess( (int)inputs[1][0], speech.release().get(), (int)inputs[3][0] );
+            //stream << "VAD=" << vad << (int)inputs[1][0] << (int)inputs[3][0] << std::endl;
+            //writeToConsole(stream);
         }
         
-        double multiplier = inputs[0][0];
-        matlab::data::TypedArray<double> in = std::move(inputs[1]);
-        arrayProduct(in, multiplier);
+        //matlab::data::TypedArray<double> in = std::move(0);
 
-        outputs[0] = std::move(in);
+        outputs[0][0] = 0;
     }
 
     void vadInit() {
@@ -70,11 +68,10 @@ public:
     }
 
     void vadSetMode( int mode ) {
-        if( vadHandle != NULL ) {
-            WebRtcVad_set_mode(vadHandle, mode);
-        } else {
-            // not initialized
+        if( vadHandle == NULL ) {
+            WebRtcVad_Init(vadHandle);
         }
+        WebRtcVad_set_mode(vadHandle, mode);
     }
     
     int vadProcess( int fs, const int16_t* audio_frame, size_t frame_length ) {
@@ -110,7 +107,10 @@ public:
         if (cmdCharArray.toAscii() == factory.createCharArray("Init").toAscii()) {
             vadInit();
         } else if (cmdCharArray.toAscii() == factory.createCharArray("SetMode").toAscii()) {
-            vadSetMode( 3 );
+            if (inputs.size() != 2) {
+                matlabPtr->feval(u"error", 
+                    0, std::vector<matlab::data::Array>({ factory.createScalar("Action 'Init' requires 1 argument: vad mode/aggressiveness (<double>)") }));  
+            }
         } else if (cmdCharArray.toAscii() == factory.createCharArray("Process").toAscii()) {
             if (inputs.size() != 4) {
                 matlabPtr->feval(u"error", 
