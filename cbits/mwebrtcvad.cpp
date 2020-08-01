@@ -39,6 +39,21 @@ public:
         const size_t kFrameLengthsSize = sizeof(kFrameLengths) / sizeof(*kFrameLengths);
 
         checkArguments(outputs, inputs);
+
+        matlab::data::CharArray cmdCharArray = inputs[0];
+        
+        if (cmdCharArray.toAscii() == factory.createCharArray("Init").toAscii()) {
+            vadInit();
+        } else if (cmdCharArray.toAscii() == factory.createCharArray("SetMode").toAscii()) {
+            vadSetMode( 3 );
+        } else if (cmdCharArray.toAscii() == factory.createCharArray("Process").toAscii()) {
+            matlab::data::TypedArray<int16_t> speech = std::move(inputs[2]);
+
+            int vad = vadProcess( 8000, speech.release().get(), 240 );
+            stream << "VAD=" << vad << std::endl;
+            writeToConsole(stream);
+        }
+        
         double multiplier = inputs[0][0];
         matlab::data::TypedArray<double> in = std::move(inputs[1]);
         arrayProduct(in, multiplier);
@@ -85,13 +100,6 @@ public:
     }
 
     void checkArguments(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
-        // Construct a speech signal that will trigger the VAD in all modes. It is
-        // known that (i * i) will wrap around, but that doesn't matter in this case.
-        int16_t speech[1440];
-        for (size_t i = 0; i < 1440; i++) {
-            speech[i] = (int16_t)(i * i);
-        }
-        
         if (inputs[0].getType() != matlab::data::ArrayType::CHAR) {
             matlabPtr->feval(u"error", 
                 0, std::vector<matlab::data::Array>({ factory.createScalar("First input must be of type string") }));            
@@ -121,11 +129,6 @@ public:
                     0, std::vector<matlab::data::Array>({ factory.createScalar("Third argument must be of type double") }));            
             }
             
-            matlab::data::TypedArray<int16_t> speech = std::move(inputs[2]);
-            
-            int vad = vadProcess( 8000, speech.release().get(), 240 );
-            stream << "VAD=" << vad << std::endl;
-            writeToConsole(stream);
         } else {
             matlabPtr->feval(u"error", 
                 0, std::vector<matlab::data::Array>({ factory.createScalar("First input must be one of the following: 'Init', 'SetMode', 'Process'") })); 
