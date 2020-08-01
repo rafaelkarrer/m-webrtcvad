@@ -16,6 +16,7 @@ class MexFunction : public matlab::mex::Function {
     std::ostringstream stream;
     std::shared_ptr<matlab::engine::MATLABEngine> matlabPtr = getEngine();
     matlab::data::ArrayFactory factory;
+    int vadResult;
     
     VadInst* vadHandle;
     
@@ -46,20 +47,21 @@ public:
             vadInit();
         } else if (cmdCharArray.toAscii() == factory.createCharArray("SetMode").toAscii()) {
             vadSetMode( (int)inputs[1][0] );
-            stream << "vad mode = " << (int)inputs[1][0] << std::endl;
-            writeToConsole(stream);
+            //stream << "vad mode = " << (int)inputs[1][0] << std::endl;
+            //writeToConsole(stream);
         } else if (cmdCharArray.toAscii() == factory.createCharArray("Process").toAscii()) {
             matlab::data::TypedArray<int16_t> speech = std::move(inputs[2]);
 
             int16_t *frame = speech.release().get();
-            int vad = vadProcess( (int)inputs[1][0], frame, (int)inputs[3][0] );
-            stream << "VAD=" << vad << (int)inputs[1][0] << (int)inputs[3][0] << frame[0] << frame[1] << std::endl;
-            writeToConsole(stream);
+            vadResult = vadProcess( (int)inputs[1][0], frame, (int)inputs[3][0] );
+            //stream << "VAD=" << vad << (int)inputs[1][0] << (int)inputs[3][0] << frame[0] << frame[1] << std::endl;
+            //writeToConsole(stream);
+        } else if (cmdCharArray.toAscii() == factory.createCharArray("Free").toAscii()) {
+            vadFree();
         }
-        
         //matlab::data::TypedArray<double> in = std::move(0);
 
-        outputs[0] = factory.createArray<double>({ 1,1 }, { 0 });
+        outputs[0] = factory.createArray<double>({ 1,1 }, { (double)vadResult });
     }
 
     void vadInit() {
@@ -102,13 +104,13 @@ public:
     void checkArguments(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
         if (inputs[0].getType() != matlab::data::ArrayType::CHAR) {
             matlabPtr->feval(u"error", 
-                0, std::vector<matlab::data::Array>({ factory.createScalar("Action argument must be one of the following strings: 'Init', 'SetMode', 'Process'") }));            
+                0, std::vector<matlab::data::Array>({ factory.createScalar("Action argument must be one of the following strings: 'Init', 'SetMode', 'Process', 'Free'") }));            
         }
 
         matlab::data::CharArray cmdCharArray = inputs[0];
         
         if (cmdCharArray.toAscii() == factory.createCharArray("Init").toAscii()) {
-            vadInit();
+            // nothing to check
         } else if (cmdCharArray.toAscii() == factory.createCharArray("SetMode").toAscii()) {
             if (inputs.size() != 2) {
                 matlabPtr->feval(u"error", 
@@ -131,7 +133,9 @@ public:
                 matlabPtr->feval(u"error", 
                     0, std::vector<matlab::data::Array>({ factory.createScalar("Argument 3 (frame_length) must be of type <double>") }));            
             }
-            
+        
+        } else if (cmdCharArray.toAscii() == factory.createCharArray("Free").toAscii()) {
+            // nothing to check
         } else {
             matlabPtr->feval(u"error", 
                 0, std::vector<matlab::data::Array>({ factory.createScalar("Action argument must be one of the following strings: 'Init', 'SetMode', 'Process'") })); 
