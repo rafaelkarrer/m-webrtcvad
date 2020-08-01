@@ -46,17 +46,20 @@ public:
             vadInit();
         } else if (cmdCharArray.toAscii() == factory.createCharArray("SetMode").toAscii()) {
             vadSetMode( (int)inputs[1][0] );
+            stream << "vad mode = " << (int)inputs[1][0] << std::endl;
+            writeToConsole(stream);
         } else if (cmdCharArray.toAscii() == factory.createCharArray("Process").toAscii()) {
             matlab::data::TypedArray<int16_t> speech = std::move(inputs[2]);
 
-            int vad = vadProcess( (int)inputs[1][0], speech.release().get(), (int)inputs[3][0] );
-            //stream << "VAD=" << vad << (int)inputs[1][0] << (int)inputs[3][0] << std::endl;
-            //writeToConsole(stream);
+            int16_t *frame = speech.release().get();
+            int vad = vadProcess( (int)inputs[1][0], frame, (int)inputs[3][0] );
+            stream << "VAD=" << vad << (int)inputs[1][0] << (int)inputs[3][0] << frame[0] << frame[1] << std::endl;
+            writeToConsole(stream);
         }
         
         //matlab::data::TypedArray<double> in = std::move(0);
 
-        outputs[0][0] = 0;
+        outputs[0] = factory.createArray<double>({ 1,1 }, { 0 });
     }
 
     void vadInit() {
