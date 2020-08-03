@@ -46,6 +46,7 @@ typedef struct VadInstT_ {
   int16_t over_hang_max_2[3];
   int16_t individual[3];
   int16_t total[3];
+  int16_t feature_vector[kNumChannels];
 
   int init_flag;
 } VadInstT;

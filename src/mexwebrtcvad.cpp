@@ -11,6 +11,7 @@
 #include "mexAdapter.hpp"
 
 #include "webrtc\common_audio\vad\include\webrtc_vad.h"
+#include "webrtc\common_audio\vad\vad_core.h"
 
 class MexFunction : public matlab::mex::Function {
     std::ostringstream stream;
@@ -50,6 +51,8 @@ public:
             //writeToConsole(stream);
             
             outputs[0] = factory.createArray<double>({ 1,1 }, { (double)vadResult });
+            VadInstT* self = (VadInstT*)vadHandle;
+            outputs[1] = factory.createArray<int16_t>({ 1,6 }, { self->feature_vector[0], self->feature_vector[1], self->feature_vector[2], self->feature_vector[3], self->feature_vector[4], self->feature_vector[5] });
             return;
             
         } else if (cmdCharArray.toAscii() == factory.createCharArray("Free").toAscii()) {
