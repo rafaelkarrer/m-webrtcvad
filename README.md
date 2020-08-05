@@ -1,4 +1,4 @@
-[![View mex-webrtcvad on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://ch.mathworks.com/matlabcentral/fileexchange/78829-mex-webrtcvad)
+[![View Google WebRTC Voice Activity Detection (VAD) module on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://ch.mathworks.com/matlabcentral/fileexchange/78895-google-webrtc-voice-activity-detection-vad-module)
 
 # mex-webrtcvad
 This is a MATLAB executable (mex) wrapper for [Google's WebRTC](https://webrtc.org/) Voice Activity Detection (VAD) module.
