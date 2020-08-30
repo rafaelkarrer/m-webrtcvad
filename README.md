@@ -5,9 +5,8 @@ This is a MATLAB executable (mex) wrapper for [Google's WebRTC](https://webrtc.o
 
 ## Get the latest release
 * Download from [here](https://github.com/rafaelkarrer/mex-webrtcvad/releases)
-
-## (Or compile from code) 
-* Run `make.m`
+* (Or compile from code)
+  - Run `make.m`
 
 ## How to use
 ```
